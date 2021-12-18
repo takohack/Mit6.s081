@@ -1,30 +1,31 @@
 #include "kernel/types.h"
 #include "user/user.h"
 #include "kernel/param.h"
+
 #define MAX_LEN 100
 
 int main(int argc, char *argv[]) {
-    char *command = argv[1];
+    char paramv[MAXARG][MAX_LEN]; //为exec准备内存 声明二维数组才会分配内存
     char bf;
-    char paramv[MAXARG][MAX_LEN]; // arguments
-    char *m[MAXARG];
+    char *m[MAXARG]; //read读取字符
 
     while (1) {
-        int count = argc - 1; // # of current arguments
+        int count = argc - 1;
         memset(paramv, 0, MAXARG * MAX_LEN);
-        // copy the parameter of command
+        //将xargs参数保存在数组中
         for (int i = 1; i < argc; i++) {
             strcpy(paramv[i - 1], argv[i]);
+            // printf("----->%s\n", paramv[i - 1]);
         }
 
-        int cursor = 0; // cursor pointing the char position in single_arg
-        int flag = 0;   // flag indicating whether thers is argument preceding space
+        int cursor = 0; //在读单词内的位置
+        int flag = 0; //开始读单词没
         int read_result;
 
-        while (((read_result = read(0, &bf, 1))) > 0 && bf != '\n') {
+        while ((read_result = read(0, &bf, 1)) > 0 && bf != '\n') {
             if (bf == ' ' && flag == 1) {
                 count++;
-                // reset flag and p
+
                 cursor = 0;
                 flag = 0;
             } else if (bf != ' ') {
@@ -32,7 +33,6 @@ int main(int argc, char *argv[]) {
                 flag = 1;
             }
         }
-        // encounters EOF of input or \n
         if (read_result <= 0) {
             break;
         }
@@ -41,10 +41,10 @@ int main(int argc, char *argv[]) {
         }
         m[MAXARG - 1] = 0;
         if (fork() == 0) {
-            exec(command, m);
+            exec(argv[1], m);
             exit(0);
         } else {
-            wait((int *)0);
+            wait(0);
         }
     }
     exit(0);

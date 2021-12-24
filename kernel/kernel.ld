@@ -10,7 +10,7 @@ SECTIONS
   . = 0x80000000;
 
   .text : {
-    *(.text .text.*)
+    *(.text .text.*)   
     . = ALIGN(0x1000);
     _trampoline = .;
     *(trampsec)
@@ -40,5 +40,5 @@ SECTIONS
     *(.bss .bss.*)
   }
 
-  PROVIDE(end = .);
+  PROVIDE(end = .);  /* 对c语言声明变量 end 就是kalloc 结束的位置 */
 }

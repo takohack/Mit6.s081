@@ -33,6 +33,7 @@ kinit()
 void
 freerange(void *pa_start, void *pa_end)
 {
+  //所有内存按照块的大小 挂到freelist上面
   char *p;
   p = (char*)PGROUNDUP((uint64)pa_start);
   for(; p + PGSIZE <= (char*)pa_end; p += PGSIZE)
